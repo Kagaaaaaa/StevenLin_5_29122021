@@ -13,7 +13,7 @@ const getGlobalProduct = async() => {
 const showProducts = async() => {
     await getGlobalProduct();
 
-    items.innerHTML =(
+    items.innerHTML = (
         jsonGlobalProduct.map(product =>(
             `
             <a href="./product.html?id=${product._id}">
