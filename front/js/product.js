@@ -2,8 +2,10 @@ const image = document.querySelector('.item__img');
 const title = document.querySelector('#title');
 const price = document.querySelector('#price');
 const description = document.querySelector('#description');
-const color = document.querySelector('option')
+const color = document.querySelector('#colors')
 const quantity = document.querySelector('#quantity');
+const addToCart = document.querySelector('#addToCart');
+let cartProduct;
 
 // On créer l'url à partir de la localisation de l'utilisateur, on fait une recherche sur l'url et on récupère uniquement l'id. 
 let currentUrl = new URL(location.href);
@@ -28,7 +30,13 @@ const showOneProducts = async() =>{
     title.innerHTML = currentProduct.name;
     price.innerHTML = currentProduct.price;
     description.innerHTML = currentProduct.description;
-    color.innerHTML = `<option value="${currentProduct.colors[0]}">${currentProduct.colors[0]}</option> <option value="${currentProduct.colors[1]}">${currentProduct.colors[1]}</option>`;
+    color.innerHTML = currentProduct.colors.map(color => `<option value="${colors}">${color}</option>`);
 }
 
 showOneProducts()
+
+//Sur le click du bouton ajouter , on récupère l'id du produit ainsi que la couleur et les quantités pour les mettres sur le localstorage 
+addToCart.addEventListener('click', () => {
+    cartProduct = [requiredId, currentProduct.name, color.value, quantity.value];
+    localStorage.cart = JSON.stringify(cartProduct);
+}, false)
