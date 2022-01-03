@@ -5,7 +5,6 @@ const description = document.querySelector('#description');
 const color = document.querySelector('#colors')
 const quantity = document.querySelector('#quantity');
 const addToCart = document.querySelector('#addToCart');
-let cartProduct;
 
 // On créer l'url à partir de la localisation de l'utilisateur, on fait une recherche sur l'url et on récupère uniquement l'id. 
 let currentUrl = new URL(location.href);
@@ -35,8 +34,35 @@ const showOneProducts = async() =>{
 
 showOneProducts()
 
+let cartProduct;
+let neededColor;
 //Sur le click du bouton ajouter , on récupère l'id du produit ainsi que la couleur et les quantités pour les mettres sur le localstorage 
 addToCart.addEventListener('click', () => {
-    cartProduct = [requiredId, currentProduct.name, color.value, quantity.value];
-    localStorage.cart = JSON.stringify(cartProduct);
+
+    /* For (i of currentProduct.color) {
+        if (i === color.value){
+            return neededColor = i = quantity.value;
+        } else {
+            console.log(error.message)
+        }
+    } */
+    cartProduct = [requiredId, currentProduct.name, currentProduct.imageUrl, color.value, quantity.value];
+
+    if (requiredId === '107fb5b75607497b96722bda5b504926') {
+        localStorage.object1 = JSON.stringify(cartProduct);
+    } else if ( requiredId === '415b7cacb65d43b2b5c1ff70f3393ad1'){
+        localStorage.object2 = JSON.stringify(cartProduct);
+    } else if ( requiredId === '055743915a544fde83cfdfc904935ee7'){
+        localStorage.object3 = JSON.stringify(cartProduct);
+    } else if ( requiredId === 'a557292fe5814ea2b15c6ef4bd73ed83'){
+        localStorage.object4 = JSON.stringify(cartProduct);
+    } else if ( requiredId === '8906dfda133f4c20a9d0e34f18adcf06'){
+        localStorage.object5 = JSON.stringify(cartProduct);
+    } else if ( requiredId === '77711f0e466b4ddf953f677d30b0efc9'){
+        localStorage.object6 = JSON.stringify(cartProduct);
+    } else if ( requiredId === '034707184e8e4eefb46400b5a3774b5f'){
+        localStorage.object7 = JSON.stringify(cartProduct);
+    } else {
+        localStorage.object8 = JSON.stringify(cartProduct);
+    }
 }, false)
