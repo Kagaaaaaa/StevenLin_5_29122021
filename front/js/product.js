@@ -29,40 +29,44 @@ const showOneProducts = async() =>{
     title.innerHTML = currentProduct.name;
     price.innerHTML = currentProduct.price;
     description.innerHTML = currentProduct.description;
-    color.innerHTML = currentProduct.colors.map(color => `<option value="${colors}">${color}</option>`);
+    color.innerHTML = currentProduct.colors.map(color => `<option value="${color}">${color}</option>`);
 }
 
 showOneProducts()
 
 let cartProduct;
-let neededColor;
-//Sur le click du bouton ajouter , on récupère l'id du produit ainsi que la couleur et les quantités pour les mettres sur le localstorage 
-addToCart.addEventListener('click', () => {
+//Sur le click du bouton ajouter , on récupère ce qu'il y a dans le localstorage , on check l'id et la couleur du currentProduct, si existant : on modifie sinon création d'un objet
+const pushIntoCart = addToCart.addEventListener('click', () => {
+    let cart = JSON.parse(localStorage.getItem('cart'));
+    let colorQuantity = parseInt(quantity.value, 10);
+    
+    if(!cart){cart = []};
 
-    /* For (i of currentProduct.color) {
-        if (i === color.value){
-            return neededColor = i = quantity.value;
+    const index = cart.findIndex(product => product.id == currentProduct._id);
+    
+    if(index >= 0 ){
+        const colorIndex = cart[index].colors.findIndex(el => el.name == color.value);
+        if(colorIndex >= 0){
+            cart[index].colors[colorIndex].quantity = parseInt(cart[index].colors[colorIndex].quantity, 10) + colorQuantity;
         } else {
-            console.log(error.message)
+            cart.push({
+                id : currentProduct._id, 
+                name : currentProduct.name, 
+                imageUrl : currentProduct.imageUrl,
+                altTxt : currentProduct.altTxt,
+                price : currentProduct.price, 
+                colors : [{name : color.value, quantity : colorQuantity}]
+            })
         }
-    } */
-    cartProduct = [requiredId, currentProduct.name, currentProduct.imageUrl, color.value, quantity.value];
-
-    if (requiredId === '107fb5b75607497b96722bda5b504926') {
-        localStorage.object1 = JSON.stringify(cartProduct);
-    } else if ( requiredId === '415b7cacb65d43b2b5c1ff70f3393ad1'){
-        localStorage.object2 = JSON.stringify(cartProduct);
-    } else if ( requiredId === '055743915a544fde83cfdfc904935ee7'){
-        localStorage.object3 = JSON.stringify(cartProduct);
-    } else if ( requiredId === 'a557292fe5814ea2b15c6ef4bd73ed83'){
-        localStorage.object4 = JSON.stringify(cartProduct);
-    } else if ( requiredId === '8906dfda133f4c20a9d0e34f18adcf06'){
-        localStorage.object5 = JSON.stringify(cartProduct);
-    } else if ( requiredId === '77711f0e466b4ddf953f677d30b0efc9'){
-        localStorage.object6 = JSON.stringify(cartProduct);
-    } else if ( requiredId === '034707184e8e4eefb46400b5a3774b5f'){
-        localStorage.object7 = JSON.stringify(cartProduct);
-    } else {
-        localStorage.object8 = JSON.stringify(cartProduct);
+    } else{
+        cart.push({
+            id : currentProduct._id, 
+            name : currentProduct.name, 
+            imageUrl : currentProduct.imageUrl,
+            altTxt : currentProduct.altTxt,
+            price : currentProduct.price, 
+            colors : [{name : color.value, quantity : colorQuantity}]
+        })                       
     }
+    localStorage.setItem('cart', JSON.stringify(cart))
 }, false)
