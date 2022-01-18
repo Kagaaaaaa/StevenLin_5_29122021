@@ -39,14 +39,15 @@ const showProducts = () =>{
 
 showProducts()
 
-const itemQuantity = document.querySelectorAll('.itemQuantity');
-const total = () =>{
-    let totalQuantity = document.querySelector('#totalQuantity');
-    let totalPrice = document.querySelector('#totalPrice')
+ const itemQuantity = document.querySelectorAll('.itemQuantity');
+/* let totalPrice;
+const total = cart.forEach(product =>{
 
-}
+    totalPrice += product.price * parseInt(product.colors.quantity, 10);
+})
 
-total()
+
+total() */
 
 // sur modification du champ de quantité , on récupère l'info sur le produit en question via l'index et on modifie la valeur dans le localstorage
 const modifyQuantity = itemQuantity.forEach(i =>{
@@ -85,4 +86,47 @@ const deleteItem = deleteHTML.forEach(i =>{
 
         localStorage.setItem('cart', JSON.stringify(cart))
     })
+})
+
+let contact = {};
+const firstNameHTML = document.querySelector('#firstname');
+const lastNameHTML = document.querySelector('#lastname');
+const addressHTML = document.querySelector('#address');
+const cityHTML = document.querySelector('#city');
+const emailHTML = document.querySelector('#email');
+const order = document.querySelector('#order');
+
+
+const createOrder = order.addEventListener('click', () =>{
+
+    const regexAlpha = /^[a-zA-Z]+$/;
+    const regexAlphaNumeric = /^[a-zA-Z0-9 ]*$/;
+    const regexEmail = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/;
+
+    if(firstNameHTML.value.match(regexAlpha)){
+        contact.firstName = firstNameHTML.value
+    } else{
+        alert('Prénom invalide, veuillez mettre uniquement des lettres')
+    }
+    if(lastNameHTML.value.match(regexAlpha)){
+        contact.lastName = lastNameHTML.value
+    } else{
+        alert('Nom invalide, veuillez mettre uniquement des lettres')
+    }
+    if(addressHTML.value.match(regexAlphaNumeric)){
+        contact.address = addressHTML.value
+    } else{
+        alert('adresse invalide, veuillez mettre uniquement des chiffres et des lettres')
+    }
+    if(cityHTML.value.match(regexAlpha)){
+        contact.city = cityHTML.value
+    } else{
+        alert('Ville invalide, veuillez mettre uniquement des lettres')
+    }
+    if(emailHTML.value.match(regexEmail)){
+        contact.email = emailHTML.value
+    } else{
+        alert('email invalide, exemple : Jeremie1990@abc.com')
+    }
+    console.log(contact)
 })
