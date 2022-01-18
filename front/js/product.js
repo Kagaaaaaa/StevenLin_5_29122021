@@ -49,13 +49,8 @@ const pushIntoCart = addToCart.addEventListener('click', () => {
         if(colorIndex >= 0){
             cart[index].colors[colorIndex].quantity = parseInt(cart[index].colors[colorIndex].quantity, 10) + colorQuantity;
         } else {
-            cart.push({
-                id : currentProduct._id, 
-                name : currentProduct.name, 
-                imageUrl : currentProduct.imageUrl,
-                altTxt : currentProduct.altTxt,
-                price : currentProduct.price, 
-                colors : [{name : color.value, quantity : colorQuantity}]
+            cart[index].colors.push({
+                name : color.value, quantity : colorQuantity
             })
         }
     } else{

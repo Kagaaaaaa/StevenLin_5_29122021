@@ -5,36 +5,50 @@ const cartHTML = document.querySelector('#cart__items');
 const showProducts = () =>{
 
     cartHTML.innerHTML = (
-        cart.map(product =>(
-            `<article class="cart__item" data-id="${product.id}"data-color="${product.colors.map(el => el.name)}">
-                <div class="cart__item__img">
-                <img src="${product.imageUrl}" alt="${product.altTxt}">
-                </div>
-                <div class="cart__item__content">
-                <div class="cart__item__content__description">
-                    <h2>${product.name}</h2>
-                    <p>${product.colors.map(el => el.name)}</p>
-                    <p>${product.price}€</p>
-                </div>
-                <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                    <p>Qté : </p>
-                    <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value=${product.colors.map(el => el.quantity)}>
+
+        cart
+        .map(product =>( 
+            product.colors.map(i =>(
+                `
+                <article class="cart__item" data-id="${product.id}" data-color="${i.name}">
+                    <div class="cart__item__img">
+                      <img src="${product.imageUrl}" alt="${product.altTxt}">
                     </div>
-                    <div class="cart__item__content__settings__delete">
-                    <p class="deleteItem">Supprimer</p>
+                    <div class="cart__item__content">
+                      <div class="cart__item__content__description">
+                        <h2>${product.name}</h2>
+                        <p>${i.name}</p>
+                        <p>${product.price}€</p>
+                      </div>
+                      <div class="cart__item__content__settings">
+                        <div class="cart__item__content__settings__quantity">
+                          <p>Qté : </p>
+                          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${i.quantity}">
+                        </div>
+                        <div class="cart__item__content__settings__delete">
+                          <p class="deleteItem">Supprimer</p>
+                        </div>
+                      </div>
                     </div>
-                </div>
-                </div>
-            </article>`            
+                </article>
+                `
+            )).join('')
         )).join('')
-    )
-    
+    )  
 }
 
 showProducts()
 
 const itemQuantity = document.querySelectorAll('.itemQuantity');
+const total = () =>{
+    let totalQuantity = document.querySelector('#totalQuantity');
+    let totalPrice = document.querySelector('#totalPrice')
+
+}
+
+total()
+
+// sur modification du champ de quantité , on récupère l'info sur le produit en question via l'index et on modifie la valeur dans le localstorage
 const modifyQuantity = itemQuantity.forEach(i =>{
     i.addEventListener('change', () =>{
         const itemInfo = i.closest("article");
@@ -48,8 +62,27 @@ const modifyQuantity = itemQuantity.forEach(i =>{
             alert('erreur produit');
             console.log(error.message);
         }
+
+        localStorage.setItem('cart', JSON.stringify(cart))
+    })
+}) 
+
+// sur click du bouton supprimer, on récupère l'info sur le produit en question via l'index, on delete la couleur et la quantité du localstorage puis on supprime l'html du produit
+const deleteHTML = document.querySelectorAll('.deleteItem');
+const deleteItem = deleteHTML.forEach(i =>{
+    i.addEventListener('click', () =>{
+        const itemInfo = i.closest("article");
+        const index = cart.findIndex(e => e.id == itemInfo.dataset.id);
+        const indexColor = cart[index].colors.findIndex(e => e.name == itemInfo.dataset.color);
+
+        if(index >= 0){
+            cart[index].colors.splice(cart[index].colors[indexColor], 1);
+            itemInfo.innerHTML = "";
+        } else{
+            alert('erreur produit');
+            console.log(error.message);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart))
     })
 })
-    
-
-
