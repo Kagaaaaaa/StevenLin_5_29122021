@@ -37,19 +37,35 @@ const showProducts = () =>{
     )  
 }
 
+let totalPrice = 0;
+const priceHTML = document.querySelector('#totalPrice');
+const quantityHTML = document.querySelector('#totalQuantity');
+quantityHTML.innerHTML = 0;
+const total = () => {
+    cart.forEach(product =>{
+        let productQ = 1;
+        if(product.colors.lenght > 1){
+            productQ = product.colors.reduce((p, c) =>{
+                if(p instanceof Object){
+                    return p.quantity + c.quantity;
+                }else{
+                    return p + c.quantity;
+                }
+            })
+        } else{
+            productQ = product.colors[0].quantity
+        }  
+
+        totalPrice += product.price * productQ;
+        quantityHTML.innerHTML += parseInt(productQ, 10);
+        priceHTML.innerHTML = totalPrice;
+    })
+};
+
 showProducts()
-
- const itemQuantity = document.querySelectorAll('.itemQuantity');
-/* let totalPrice;
-const total = cart.forEach(product =>{
-
-    totalPrice += product.price * parseInt(product.colors.quantity, 10);
-})
-
-
-total() */
-
+total()
 // sur modification du champ de quantité , on récupère l'info sur le produit en question via l'index et on modifie la valeur dans le localstorage
+const itemQuantity = document.querySelectorAll('.itemQuantity');
 const modifyQuantity = itemQuantity.forEach(i =>{
     i.addEventListener('change', () =>{
         const itemInfo = i.closest("article");
@@ -65,6 +81,7 @@ const modifyQuantity = itemQuantity.forEach(i =>{
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
+        total()
     })
 }) 
 
@@ -78,55 +95,76 @@ const deleteItem = deleteHTML.forEach(i =>{
 
         if(index >= 0){
             cart[index].colors.splice(cart[index].colors[indexColor], 1);
-            itemInfo.innerHTML = "";
+            if(cart[index].colors.length === 0){
+                cart.splice(index, 1)
+            }
+            itemInfo.remove();
         } else{
             alert('erreur produit');
             console.log(error.message);
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
+        total()
     })
 })
 
-let contact = {};
-const firstNameHTML = document.querySelector('#firstname');
-const lastNameHTML = document.querySelector('#lastname');
+let order = {
+    contact : {
+        firstName : "",
+        lastName : "",
+        address : "",
+        city : "",
+        email : "",
+    },
+    products : cart,
+};
+const firstNameHTML = document.querySelector('#firstName');
+const lastNameHTML = document.querySelector('#lastName');
 const addressHTML = document.querySelector('#address');
 const cityHTML = document.querySelector('#city');
 const emailHTML = document.querySelector('#email');
-const order = document.querySelector('#order');
+const orderHTML = document.querySelector('#order');
 
 
-const createOrder = order.addEventListener('click', () =>{
+const createOrder = orderHTML.addEventListener('click', () =>{
 
     const regexAlpha = /^[a-zA-Z]+$/;
     const regexAlphaNumeric = /^[a-zA-Z0-9 ]*$/;
     const regexEmail = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/;
 
     if(firstNameHTML.value.match(regexAlpha)){
-        contact.firstName = firstNameHTML.value
+        order.contact.firstName = firstNameHTML.value
     } else{
         alert('Prénom invalide, veuillez mettre uniquement des lettres')
     }
     if(lastNameHTML.value.match(regexAlpha)){
-        contact.lastName = lastNameHTML.value
+        order.contact.lastName = lastNameHTML.value
     } else{
         alert('Nom invalide, veuillez mettre uniquement des lettres')
     }
     if(addressHTML.value.match(regexAlphaNumeric)){
-        contact.address = addressHTML.value
+        order.contact.address = addressHTML.value
     } else{
         alert('adresse invalide, veuillez mettre uniquement des chiffres et des lettres')
     }
-    if(cityHTML.value.match(regexAlpha)){
-        contact.city = cityHTML.value
+    if(cityHTML.value.match(regexAlphaNumeric)){
+        order.contact.city = cityHTML.value
     } else{
-        alert('Ville invalide, veuillez mettre uniquement des lettres')
+        alert('Ville invalide, veuillez mettre uniquement des lettres et des chiffres')
     }
     if(emailHTML.value.match(regexEmail)){
-        contact.email = emailHTML.value
+        order.contact.email = emailHTML.value
     } else{
         alert('email invalide, exemple : Jeremie1990@abc.com')
     }
-    console.log(contact)
+    console.log(order)
+
+    fetch('http://localhost:3000/api/products/order', {
+        method : "POST",
+        headers : {'Content-Type': 'application/json'},
+        body : order
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
 })

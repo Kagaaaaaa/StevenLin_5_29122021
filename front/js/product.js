@@ -34,6 +34,8 @@ const showOneProducts = async() =>{
 
 showOneProducts()
 
+quantity.value = 1;
+
 let cartProduct;
 //Sur le click du bouton ajouter , on récupère ce qu'il y a dans le localstorage , on check l'id et la couleur du currentProduct, si existant : on modifie sinon création d'un objet
 const pushIntoCart = addToCart.addEventListener('click', () => {
