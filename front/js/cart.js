@@ -37,14 +37,16 @@ const showProducts = () =>{
     )  
 }
 
+// Calcule du total quantité et du total prix à partir du cart grace à une boucle et une utilisation de reduce.
 let totalPrice = 0;
+let totalQuantity = 0
 const priceHTML = document.querySelector('#totalPrice');
 const quantityHTML = document.querySelector('#totalQuantity');
 quantityHTML.innerHTML = 0;
 const total = () => {
     cart.forEach(product =>{
         let productQ = 1;
-        if(product.colors.lenght > 1){
+        if(product.colors.length > 1){
             productQ = product.colors.reduce((p, c) =>{
                 if(p instanceof Object){
                     return p.quantity + c.quantity;
@@ -55,9 +57,9 @@ const total = () => {
         } else{
             productQ = product.colors[0].quantity
         }  
-
+        totalQuantity += productQ
         totalPrice += product.price * productQ;
-        quantityHTML.innerHTML += parseInt(productQ, 10);
+        quantityHTML.innerHTML = totalQuantity;
         priceHTML.innerHTML = totalPrice;
     })
 };
@@ -81,6 +83,8 @@ const modifyQuantity = itemQuantity.forEach(i =>{
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
+        totalPrice = 0;
+        totalQuantity = 0
         total()
     })
 }) 
@@ -105,6 +109,8 @@ const deleteItem = deleteHTML.forEach(i =>{
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
+        totalPrice = 0;
+        totalQuantity = 0
         total()
     })
 })
@@ -117,7 +123,7 @@ let order = {
         city : "",
         email : "",
     },
-    products : cart,
+    products : [],
 };
 const firstNameHTML = document.querySelector('#firstName');
 const lastNameHTML = document.querySelector('#lastName');
@@ -126,8 +132,8 @@ const cityHTML = document.querySelector('#city');
 const emailHTML = document.querySelector('#email');
 const orderHTML = document.querySelector('#order');
 
-
-const createOrder = orderHTML.addEventListener('click', () =>{
+// Première temps, vérification du formulaire avec du regex basique, si validé on envoie une requete post à l'api qui contient order et il nous retourne la commande + son numéro puis on redirige vers la page confirm
+const createOrder = orderHTML.addEventListener('click', async () =>{
 
     const regexAlpha = /^[a-zA-Z]+$/;
     const regexAlphaNumeric = /^[a-zA-Z0-9 ]*$/;
@@ -160,11 +166,18 @@ const createOrder = orderHTML.addEventListener('click', () =>{
     }
     console.log(order)
 
-    fetch('http://localhost:3000/api/products/order', {
+    cart.map(el =>{
+        order.products.push(el.id)
+    })
+ 
+    await fetch('http://localhost:3000/api/products/order', {
         method : "POST",
         headers : {'Content-Type': 'application/json'},
-        body : order
+        body : JSON.stringify(order)
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(data =>{
+        console.log(data);
+        window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?id=${data.orderId}`
+    });
 })
