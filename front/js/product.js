@@ -35,6 +35,15 @@ const showOneProducts = async() =>{
 showOneProducts()
 
 quantity.value = 1;
+const quantityCheck = quantity.addEventListener("change", () =>{
+    quantityRegex = /^[1-9]$|^[1-9][0-9]$|^(100)$/;
+    if(quantity.value.match(quantityRegex)){
+        console.log("everything okay")
+    } else{
+        alert("Veuillez mettre un nombres entre 1 et 100")
+        quantity.value = 1;
+    }
+}) 
 
 let cartProduct;
 //Sur le click du bouton ajouter , on récupère ce qu'il y a dans le localstorage , on check l'id et la couleur du currentProduct, si existant : on modifie sinon création d'un objet

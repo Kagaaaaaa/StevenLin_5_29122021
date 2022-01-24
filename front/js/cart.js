@@ -75,11 +75,19 @@ const modifyQuantity = itemQuantity.forEach(i =>{
         const indexColor = cart[index].colors.findIndex(e => e.name == itemInfo.dataset.color);
 
         let colorQuantity = parseInt(i.value, 10);
-        if(index >= 0 && indexColor >= 0){
-            cart[index].colors[indexColor].quantity = colorQuantity;
+
+        quantityRegex = /^[1-9]$|^[1-9][0-9]$|^(100)$/;
+        if(i.value.match(quantityRegex)){
+            if(index >= 0 && indexColor >= 0){
+                cart[index].colors[indexColor].quantity = colorQuantity;
+            } else{
+                alert('erreur produit');
+                console.log(error.message);
+            }    
         } else{
-            alert('erreur produit');
-            console.log(error.message);
+            alert("Veuillez mettre un nombres entre 1 et 100")
+            cart[index].colors[indexColor].quantity = 1;
+            i.value = 1
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
