@@ -147,6 +147,7 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     const regexAlphaNumeric = /^[a-zA-Z0-9 ]*$/;
     const regexEmail = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})*$/;
 
+    // Formulaire + Regex
     if(firstNameHTML.value.match(regexAlpha)){
         order.contact.firstName = firstNameHTML.value
     } else{
@@ -172,13 +173,14 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     } else{
         alert('email invalide, exemple : Jeremie1990@abc.com')
     }
-    console.log(order)
+    console.log(order);
 
-    cart.map(el =>{
-        order.products.push(el.id)
-    })
- 
-    await fetch('http://localhost:3000/api/products/order', {
+    order.products.push(...cart.map(el =>{
+       return el.id;
+    }));
+    
+    // requete post vers l'api
+    fetch('http://localhost:3000/api/products/order', {
         method : "POST",
         headers : {'Content-Type': 'application/json'},
         body : JSON.stringify(order)
@@ -186,6 +188,6 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     .then(response => response.json())
     .then(data =>{
         console.log(data);
-        window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?id=${data.orderId}`
+        window.location.href = `${window.location.origin}/front/html/confirmation.html?id=${data.orderId}`;
     });
 })
