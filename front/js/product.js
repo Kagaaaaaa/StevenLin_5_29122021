@@ -10,15 +10,13 @@ const addToCart = document.querySelector('#addToCart');
 let currentUrl = new URL(location.href);
 let searchUrl = new URLSearchParams(currentUrl.search);
 let requiredId = searchUrl.get('id');
-
 let currentProduct;
 
 // On récupère le produit dont l'id a été récupéré au préalable 
 const getProducts = async() => {    
     currentProduct = await fetch("http://localhost:3000/api/products/" + requiredId)
     .then(response => response.json())
-    .catch(err => console.log('Something went wrong' + err.message))
-    console.log(currentProduct);
+    .catch(err => console.log('Something went wrong' + err.message));
 }
 
 // On affiche le produit sur la page product
@@ -38,7 +36,7 @@ quantity.value = 1;
 const quantityCheck = quantity.addEventListener("change", () =>{
     quantityRegex = /^[1-9]$|^[1-9][0-9]$|^(100)$/;
     if(quantity.value.match(quantityRegex)){
-        console.log("everything okay")
+        return
     } else{
         alert("Veuillez mettre un nombres entre 1 et 100")
         quantity.value = 1;

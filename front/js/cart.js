@@ -66,6 +66,7 @@ const total = () => {
 
 showProducts()
 total()
+
 // sur modification du champ de quantité , on récupère l'info sur le produit en question via l'index et on modifie la valeur dans le localstorage
 const itemQuantity = document.querySelectorAll('.itemQuantity');
 const modifyQuantity = itemQuantity.forEach(i =>{
@@ -113,7 +114,6 @@ const deleteItem = deleteHTML.forEach(i =>{
             itemInfo.remove();
         } else{
             alert('erreur produit');
-            console.log(error.message);
         }
 
         localStorage.setItem('cart', JSON.stringify(cart))
@@ -151,29 +151,28 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     if(firstNameHTML.value.match(regexAlpha)){
         order.contact.firstName = firstNameHTML.value
     } else{
-        alert('Prénom invalide, veuillez mettre uniquement des lettres')
+        alert('Prénom invalide, veuillez mettre uniquement des lettres');
     }
     if(lastNameHTML.value.match(regexAlpha)){
         order.contact.lastName = lastNameHTML.value
     } else{
-        alert('Nom invalide, veuillez mettre uniquement des lettres')
+        alert('Nom invalide, veuillez mettre uniquement des lettres');
     }
     if(addressHTML.value.match(regexAlphaNumeric)){
         order.contact.address = addressHTML.value
     } else{
-        alert('adresse invalide, veuillez mettre uniquement des chiffres et des lettres')
+        alert('adresse invalide, veuillez mettre uniquement des chiffres et des lettres');
     }
     if(cityHTML.value.match(regexAlphaNumeric)){
         order.contact.city = cityHTML.value
     } else{
-        alert('Ville invalide, veuillez mettre uniquement des lettres et des chiffres')
+        alert('Ville invalide, veuillez mettre uniquement des lettres et des chiffres');
     }
     if(emailHTML.value.match(regexEmail)){
         order.contact.email = emailHTML.value
     } else{
-        alert('email invalide, exemple : Jeremie1990@abc.com')
-    }
-    console.log(order);
+        alert('email invalide, exemple : Jeremie1990@abc.com');
+    };
 
     order.products.push(...cart.map(el =>{
        return el.id;

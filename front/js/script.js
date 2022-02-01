@@ -6,7 +6,6 @@ const getGlobalProduct = async() => {
     jsonGlobalProduct = await fetch('http://localhost:3000/api/products')
     .then(response => response.json())
     .catch(error => { console.log('Something went wrong' + error.message); });
-    console.log(jsonGlobalProduct)
 }
 
 // On créer les Produits sur la page index à partir de jsonGlobalProduct avec la fonction map
