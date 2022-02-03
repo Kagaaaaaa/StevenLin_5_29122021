@@ -1,3 +1,4 @@
+let jsonGlobalProduct;
 let cart = JSON.parse(localStorage.getItem('cart'));
 const cartHTML = document.querySelector('#cart__items');
 
@@ -18,7 +19,7 @@ const showProducts = () =>{
                       <div class="cart__item__content__description">
                         <h2>${product.name}</h2>
                         <p>${i.name}</p>
-                        <p>${product.price}€</p>
+                        <p class="price"></p>
                       </div>
                       <div class="cart__item__content__settings">
                         <div class="cart__item__content__settings__quantity">
@@ -36,6 +37,29 @@ const showProducts = () =>{
         )).join('')
     )  
 }
+
+const getGlobalProduct = async() => {
+    jsonGlobalProduct = await fetch('http://localhost:3000/api/products')
+    .then(response => response.json())
+    .catch(error => console.log(error));
+}
+
+getGlobalProduct()
+
+const showPrice = () =>{
+    const price = document.querySelectorAll(".price");
+    price.forEach(el =>{
+        const closestArticle = el.closest("article");
+        jsonGlobalProduct.forEach(i =>{
+            if(i.id == closestArticle.dataset.id){
+                el = i.price
+            }
+        })
+    })
+
+}
+
+showPrice()
 
 // Calcule du total quantité et du total prix à partir du cart grace à une boucle et une utilisation de reduce.
 let totalPrice = 0;
@@ -57,7 +81,7 @@ const total = () => {
         } else{
             productQ = product.colors[0].quantity
         }  
-        totalQuantity += productQ
+        totalQuantity += productQ;
         totalPrice += product.price * productQ;
         quantityHTML.innerHTML = totalQuantity;
         priceHTML.innerHTML = totalPrice;
