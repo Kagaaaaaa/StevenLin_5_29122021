@@ -196,7 +196,7 @@ const emailHTML = document.querySelector('#email');
 const orderHTML = document.querySelector('#order');
 
 // Première temps, vérification du formulaire avec du regex basique, si validé on envoie une requete post à l'api qui contient order et il nous retourne la commande + son numéro puis on redirige vers la page confirm
-const createOrder = orderHTML.addEventListener('click', async () =>{
+const createOrder = orderHTML.addEventListener('click', () =>{
 
     const regexAlpha = /^[a-zA-Z]+$/;
     const regexAlphaNumeric = /^[a-zA-Z0-9 ]*$/;
@@ -230,9 +230,8 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     };
 
     order.products.push(...cart.map(el =>{
-       return el.id;
+        return el.id;
     }));
-    localStorage.removeItem(cart);
     // requete post vers l'api
     fetch('http://localhost:3000/api/products/order', {
         method : "POST",
