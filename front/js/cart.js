@@ -41,58 +41,88 @@ const showProducts = () =>{
 const getGlobalProduct = async() => {
     jsonGlobalProduct = await fetch('http://localhost:3000/api/products')
     .then(response => response.json())
-    .catch(error => console.log(error));
+    .catch(error => { console.log('Something went wrong' + error.message); });
 }
 
+showProducts()
 getGlobalProduct()
 
-const showPrice = () =>{
+const showPrice = async() =>{
+    await getGlobalProduct();
     const price = document.querySelectorAll(".price");
     price.forEach(el =>{
         const closestArticle = el.closest("article");
-        jsonGlobalProduct.forEach(i =>{
-            if(i.id == closestArticle.dataset.id){
-                el = i.price
-            }
-        })
-    })
-
-}
-
+        const index = jsonGlobalProduct.findIndex(e => e._id == closestArticle.dataset.id);
+        if(index >= 0){
+        el.innerHTML = jsonGlobalProduct[index].price + "€";
+        };
+    });
+};
 showPrice()
 
-// Calcule du total quantité et du total prix à partir du cart grace à une boucle et une utilisation de reduce.
-let totalPrice = 0;
-let totalQuantity = 0
+
+
 const priceHTML = document.querySelector('#totalPrice');
 const quantityHTML = document.querySelector('#totalQuantity');
+const itemQuantity = document.querySelectorAll('.itemQuantity');
 quantityHTML.innerHTML = 0;
-const total = () => {
-    cart.forEach(product =>{
-        let productQ = 1;
-        if(product.colors.length > 1){
-            productQ = product.colors.reduce((p, c) =>{
-                if(p instanceof Object){
-                    return p.quantity + c.quantity;
-                }else{
-                    return p + c.quantity;
-                }
-            })
-        } else{
-            productQ = product.colors[0].quantity
-        }  
-        totalQuantity += productQ;
-        totalPrice += product.price * productQ;
-        quantityHTML.innerHTML = totalQuantity;
-        priceHTML.innerHTML = totalPrice;
+
+// Calcule du total via l'utilisation de findIndex
+const total = async() => {
+    await showPrice();
+    const price = document.querySelectorAll(".price");
+    let totalPrice = 0;
+    let totalQuantity = 0;
+    let currentPrice = 0;
+
+    // Function pour le calcul des quantités
+    itemQuantity.forEach(i =>{
+        const itemInfo = i.closest("article");
+        const index = cart.findIndex(e => e.id == itemInfo.dataset.id);
+        const indexColor = cart[index].colors.findIndex(e => e.name == itemInfo.dataset.color);
+        if(index >= 0 && indexColor >= 0){
+            totalQuantity += parseInt(cart[index].colors[indexColor].quantity, 10);
+        }   
     })
+
+    // Function pour le calcul des prix
+    price.forEach(e =>{
+        const itemInfo = e.closest("article");
+        const index = cart.findIndex(e => e.id == itemInfo.dataset.id);
+        const indexColor = cart[index].colors.findIndex(e => e.name == itemInfo.dataset.color);
+        if(index >= 0 && indexColor >= 0){
+            currentPrice = e.innerHTML.replace(/\D/g, '');
+            let resultPrice = parseInt(cart[index].colors[indexColor].quantity, 10) * parseInt(currentPrice, 10);
+            totalPrice += resultPrice;
+        }
+    })    
+
+    quantityHTML.innerHTML = totalQuantity;
+    priceHTML.innerHTML = totalPrice
 };
 
-showProducts()
-total()
+// Control de la quantité total du panier, si > 100, remet toutes les quantités à 1
+const totalControl = async() =>{
+    await total();
+    if(quantityHTML.innerHTML > 100){
+        cart.forEach(i =>{
+            i.colors.forEach(el =>{
+                el.quantity = 1;
+            })
+        })
+        itemQuantity.forEach(i =>{
+            i.value = 1;
+        })
+        alert("Attention le panier ne peut pas dépasser 100 articles ! Veuillez reconfirmer vos quantités.")
+        localStorage.setItem('cart', JSON.stringify(cart));
+        total();
+    }
+}
+
+total();
+totalControl();
 
 // sur modification du champ de quantité , on récupère l'info sur le produit en question via l'index et on modifie la valeur dans le localstorage
-const itemQuantity = document.querySelectorAll('.itemQuantity');
 const modifyQuantity = itemQuantity.forEach(i =>{
     i.addEventListener('change', () =>{
         const itemInfo = i.closest("article");
@@ -107,18 +137,18 @@ const modifyQuantity = itemQuantity.forEach(i =>{
                 cart[index].colors[indexColor].quantity = colorQuantity;
             } else{
                 alert('erreur produit');
-                console.log(error.message);
             }    
         } else{
-            alert("Veuillez mettre un nombres entre 1 et 100")
+            alert("Veuillez mettre un nombres entre 1 et 100");
             cart[index].colors[indexColor].quantity = 1;
             i.value = 1
         }
 
-        localStorage.setItem('cart', JSON.stringify(cart))
+        localStorage.setItem('cart', JSON.stringify(cart));
         totalPrice = 0;
-        totalQuantity = 0
-        total()
+        totalQuantity = 0;
+        total();
+        totalControl()
     })
 }) 
 
@@ -133,17 +163,18 @@ const deleteItem = deleteHTML.forEach(i =>{
         if(index >= 0){
             cart[index].colors.splice(cart[index].colors[indexColor], 1);
             if(cart[index].colors.length === 0){
-                cart.splice(index, 1)
+                cart.splice(index, 1);
             }
             itemInfo.remove();
         } else{
             alert('erreur produit');
         }
 
-        localStorage.setItem('cart', JSON.stringify(cart))
+        localStorage.setItem('cart', JSON.stringify(cart));
         totalPrice = 0;
-        totalQuantity = 0
-        total()
+        totalQuantity = 0;
+        total();
+        totalControl()
     })
 })
 
@@ -201,7 +232,7 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
     order.products.push(...cart.map(el =>{
        return el.id;
     }));
-    
+    localStorage.removeItem(cart);
     // requete post vers l'api
     fetch('http://localhost:3000/api/products/order', {
         method : "POST",
@@ -209,8 +240,5 @@ const createOrder = orderHTML.addEventListener('click', async () =>{
         body : JSON.stringify(order)
     })
     .then(response => response.json())
-    .then(data =>{
-        console.log(data);
-        window.location.href = `${window.location.origin}/front/html/confirmation.html?id=${data.orderId}`;
-    });
+    .then(data =>{window.location.href = `${window.location.origin}/front/html/confirmation.html?id=${data.orderId}`;});
 })

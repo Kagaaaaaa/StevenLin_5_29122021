@@ -68,7 +68,6 @@ const pushIntoCart = addToCart.addEventListener('click', () => {
             name : currentProduct.name, 
             imageUrl : currentProduct.imageUrl,
             altTxt : currentProduct.altTxt,
-            price : currentProduct.price, 
             colors : [{name : color.value, quantity : colorQuantity}]
         })                       
     }
